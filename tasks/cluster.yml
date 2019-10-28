@@ -6,13 +6,14 @@
   changed_when: false
   register: docker_swarm_state
 
+- name: Get node public IP
+  ipify_facts:
+
 - name: cluster | Set swarm state facts
   set_fact:
     docker_node_active: "{{ docker_swarm_state.stdout == 'active' }}"
     docker_node_pending: "{{ docker_swarm_state.stdout == 'pending' }}"
-    docker_swarm_addr: >-
-      {{ vars['ansible_' +
-         docker_swarm_network_interface]['ipv4']['address'] }}
+    docker_swarm_addr: "{{ hostvars[inventory_hostname]['ipify_public_ip'] }}"
 
 - name: cluster | Init "Swarm Mode" on the first manager
   command: >
