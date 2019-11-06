@@ -18,7 +18,7 @@
 - name: cluster | Init "Swarm Mode" on the first manager
   command: >
     docker swarm init
-    --listen-addr {{ docker_swarm_addr }}:{{ docker_swarm_port }}
+    --listen-addr 0.0.0.0:{{ docker_swarm_port }}
     --advertise-addr {{ docker_swarm_addr }}
   when:
     - not docker_node_active
@@ -55,7 +55,7 @@
   command: >
     docker swarm join
     --advertise-addr {{ docker_swarm_addr }}
-    --listen-addr {{ docker_swarm_addr }}:{{ docker_swarm_port }}
+    --listen-addr 0.0.0.0:{{ docker_swarm_port }}
     --token {{ docker_swarm_worker_token.stdout }}
     {{ docker_primary_node_addr }}:{{ docker_swarm_port }}
   when:
@@ -67,7 +67,7 @@
   command: >
     docker swarm join
     --advertise-addr {{ docker_swarm_addr }}
-    --listen-addr {{ docker_swarm_addr }}:{{ docker_swarm_port }}
+    --listen-addr 0.0.0.0:{{ docker_swarm_port }}
     --token {{ docker_swarm_manager_token.stdout }}
     {{ docker_primary_node_addr }}:{{ docker_swarm_port }}
   when:
