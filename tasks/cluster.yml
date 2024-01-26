@@ -8,12 +8,27 @@
 
 - name: Get node public IP
   ipify_facts:
+  when:
+    - "'docker_swarm_public_ipv4' in group_names"
 
 - name: cluster | Set swarm state facts
   set_fact:
     docker_node_active: "{{ docker_swarm_state.stdout == 'active' }}"
     docker_node_pending: "{{ docker_swarm_state.stdout == 'pending' }}"
+
+- name: cluster | Set swarm address facts using public IPv4
+  set_fact:
     docker_swarm_addr: "{{ hostvars[inventory_hostname]['ipify_public_ip'] }}"
+  when:
+    - "'docker_swarm_public_ipv4' in group_names"
+
+- name: cluster | Set swarm address facts using private IPv4
+  set_fact:
+    docker_swarm_addr: >-
+      {{ vars['ansible_' +	
+         docker_swarm_network_interface]['ipv4']['address'] }}
+  when:
+    - "'docker_swarm_public_ipv4' not in group_names"
 
 - name: cluster | Init "Swarm Mode" on the first manager
   command: >
